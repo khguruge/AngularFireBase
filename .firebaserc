@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "angularfirebasecrud-37233": {
+      "hosting": {
+        "AngularFirebase": [
+          "angularfirebasecrud-37233"
+        ]
+      }
+    }
+  }
+}
