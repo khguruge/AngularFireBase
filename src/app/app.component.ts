@@ -7,31 +7,77 @@ import {CrudService} from './service/crud.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'AngularFirebase';
+  title = 'angular9-firebaseapp';
 
-  employee : string;
-  employeeName : string;
-  employeeAge : number;
-  employeeAddress : string;
-  message : string ;
+employee: any;
+employeeName:string;
+employeeAge:number;
+employeeAddress:string;
+message:string;
 
-    constructor( public crudservice : CrudService){}
 
-    CreateRecord (){
-      let Record = {};
-      Record ['name'] = this.employeeName;
-      Record ['age'] = this.employeeAge;
-      Record ['address'] = this.employeeAddress;
+  constructor(public crudservice:CrudService){}
 
-      this.crudservice.create_Newemployee(Record).then( res =>{
-        this.employeeName = "Kasun";
-        this.employeeAge = 45;
-        this.employeeAddress = "Kalubowitiyana";
-        console.log(res); 
-        this.message = "Employee data save done";
-      }).catch(error => {
-        console.log(error);
-      });
-    }
+ngOnInit() {
+    this.crudservice.get_Allemployee().subscribe(data => {
+
+      this.employee = data.map(e => {
+        return {
+          id: e.payload.doc.id,
+          isedit: false,
+          name: e.payload.doc.data()['name'],
+          age: e.payload.doc.data()['age'],
+          address: e.payload.doc.data()['address'],
+        };
+      })
+      console.log(this.employee);
+
+    });
+  }
+
+  CreateRecord()
+  {
+    let Record = {};
+    Record['name'] = this.employeeName;
+    Record['age'] = this.employeeAge;
+    Record['address'] = this.employeeAddress;
+
+    this.crudservice.create_Newemployee(Record).then(res => {
+
+        this.employeeName = "";
+        this.employeeAge = undefined;
+        this.employeeAddress ="";
+        console.log(res);
+        this.message = "Employee data save Done";
+    }).catch(error => {
+      console.log(error);
+    });
+    
+  }
+
+  EditRecord(Record)
+  {
+    Record.isedit = true;
+    Record.editname = Record.name;
+    Record.editage = Record.age;
+    Record.editaddress = Record.address;
+
+  }
+
+  Updatarecord(recorddata)
+  {
+    let record = {};
+    record['name'] = recorddata.editname;
+    record['age'] = recorddata.editage;
+    record['address'] = recorddata.editaddress;
+    this.crudservice.update_employee(recorddata.id, record);
+    recorddata.isedit = false;
+  }
+
+  Deleteemployee(record_id)
+  {
+    this.crudservice.delete_employee(record_id);
+  }
+
 
 }
